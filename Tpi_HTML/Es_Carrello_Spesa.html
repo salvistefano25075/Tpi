@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulatore Carrello della Spesa</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <html data-theme="emerald">
+</head>
+<body>
+    <center>
+        <!-- Schermata di Registrazione -->
+        <div id="schermata-registrazione" class="w-full max-w-md p-5 border border-gray-300 shadow-md mt-5">
+            <h1 class="text-3xl font-bold">Registrazione</h1>
+            <div class="avatar">
+                <div class="w-24 rounded">
+                    <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                </div>
+            </div>
+            <form id="dati-personali" onsubmit="vaiAcquisto(event)">
+                <label class="label">
+                    <span class="label-text">Nome:</span>
+                </label>
+                <input type="text" id="nome" required class="input input-bordered w-full mb-4" />
+
+                <label class="label">
+                    <span class="label-text">Cognome:</span>
+                </label>
+                <input type="text" id="cognome" required class="input input-bordered w-full mb-4" />
+
+                <label class="label">
+                    <span class="label-text">Indirizzo:</span>
+                </label>
+                <input type="text" id="indirizzo" required class="input input-bordered w-full mb-4" />
+
+                <label class="label">
+                    <span class="label-text">Email:</span>
+                </label>
+                <input type="email" id="email" required class="input input-bordered w-full mb-4" />
+
+                <label class="label">
+                    <span class="label-text">Telefono:</span>
+                </label>
+                <input type="tel" id="telefono" required class="input input-bordered w-full mb-4" />
+
+                <button type="submit" class="btn btn-primary w-full">Registrati</button>
+            </form>
+        </div>
+    </center>
+
+    <!-- Schermata di Acquisto -->
+    <div id="schermata-acquisto" class="hidden p-5">
+        <h1 class="text-2xl font-bold">Prodotti Disponibili</h1>
+        <table id="prodotti" class="table w-full">
+            <thead>
+                <tr>
+                    <th>Prodotto</th>
+                    <th>Prezzo</th>
+                    <th>Azione</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Prodotti vengono inseriti dinamicamente da JavaScript -->
+            </tbody>
+        </table>
+
+        <h2 class="mt-5 text-xl font-semibold">Carrello della Spesa</h2>
+        <table id="carrello" class="table w-full mt-2">
+            <thead>
+                <tr>
+                    <th>Prodotto</th>
+                    <th>Quantità</th>
+                    <th>Prezzo Unitario</th>
+                    <th>Subtotale</th>
+                    <th>Azione</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Prodotti nel carrello -->
+            </tbody>
+        </table>
+        <p class="font-bold mt-2">Totale: €<span id="totale">0.00</span></p>
+
+        <button onclick="vaiPagamento()" class="btn btn-success mt-4">Procedi al Pagamento</button>
+    </div>
+
+    <!-- Schermata di Pagamento -->
+    <div id="schermata-pagamento" class="hidden p-5">
+        <h1 class="text-2xl font-bold">Pagamento</h1>
+        <h2 class="mt-2 text-lg">Totale da Pagare: €<span id="totale-pagamento">0.00</span></h2>
+        <label for="metodo-pagamento" class="label mt-3">
+            <span class="label-text">Seleziona un metodo di pagamento:</span>
+        </label>
+        <select id="metodo-pagamento" class="select select-bordered w-full">
+            <option value="carta di credito">Carta di Credito</option>
+            <option value="paypal">PayPal</option>
+            <option value="bonifico">Bonifico Bancario</option>
+        </select>
+        <br><br>
+        <button onclick="completaPagamento()" class="btn btn-primary mt-4">Completa il Pagamento</button>
+    </div>
+
+    <script>
+        const prodotti = [
+            { nome: "Smartphone X", prezzo: 599.99 },
+            { nome: "Cuffie Bluetooth", prezzo: 99.99 },
+            { nome: "Laptop Pro 13", prezzo: 1199.99 },
+            { nome: "TV 4K Ultra HD", prezzo: 799.99 },
+            { nome: "Smartwatch Serie 5", prezzo: 249.99 }
+        ];
+
+        let carrello = [];
+
+        function mostraProdotti() {
+            const tabellaProdotti = document.getElementById('prodotti').getElementsByTagName('tbody')[0];
+            tabellaProdotti.innerHTML = ''; // Pulisce la tabella
+            prodotti.forEach((prodotto, indice) => {
+                const riga = tabellaProdotti.insertRow();
+                riga.insertCell(0).innerText = prodotto.nome;
+                riga.insertCell(1).innerText = `€${prodotto.prezzo.toFixed(2)}`;
+                const pulsanteAggiungi = document.createElement('button');
+                pulsanteAggiungi.className = "btn btn-outline";
+                pulsanteAggiungi.innerText = "Aggiungi al Carrello";
+                pulsanteAggiungi.onclick = () => aggiungiAlCarrello(indice);
+                riga.insertCell(2).appendChild(pulsanteAggiungi);
+            });
+        }
+
+        function aggiungiAlCarrello(indiceProdotto) {
+            const prodotto = prodotti[indiceProdotto];
+            const articoloNelCarrello = carrello.find(item => item.prodotto.nome === prodotto.nome);
+            if (articoloNelCarrello) {
+                articoloNelCarrello.quantita += 1;
+            } else {
+                carrello.push({ prodotto: prodotto, quantita: 1 });
+            }
+            mostraCarrello();
+        }
+
+        function mostraCarrello() {
+            const tabellaCarrello = document.getElementById('carrello').getElementsByTagName('tbody')[0];
+            tabellaCarrello.innerHTML = ''; // Pulisce la tabella
+            let totale = 0;
+            carrello.forEach((articolo, indice) => {
+                const riga = tabellaCarrello.insertRow();
+                riga.insertCell(0).innerText = articolo.prodotto.nome;
+                riga.insertCell(1).innerText = articolo.quantita;
+                riga.insertCell(2).innerText = `€${articolo.prodotto.prezzo.toFixed(2)}`;
+                const subtotale = articolo.quantita * articolo.prodotto.prezzo;
+                riga.insertCell(3).innerText = `€${subtotale.toFixed(2)}`;
+                totale += subtotale;
+                const pulsanteRimuovi = document.createElement('button');
+                pulsanteRimuovi.className = "btn btn-outline";
+                pulsanteRimuovi.innerText = "Rimuovi";
+                pulsanteRimuovi.onclick = () => rimuoviDalCarrello(indice);
+                riga.insertCell(4).appendChild(pulsanteRimuovi);
+            });
+            document.getElementById('totale').innerText = totale.toFixed(2);
+        }
+
+        function rimuoviDalCarrello(indice) {
+            carrello.splice(indice, 1);
+            mostraCarrello();
+        }
+
+        function vaiAcquisto(event) {
+            event.preventDefault(); // Previene il refresh della pagina
+            document.getElementById('schermata-registrazione').classList.add('hidden');
+            document.getElementById('schermata-acquisto').classList.remove('hidden');
+            mostraProdotti();
+        }
+
+        function vaiPagamento() {
+            document.getElementById('schermata-acquisto').classList.add('hidden');
+            document.getElementById('schermata-pagamento').classList.remove('hidden');
+            document.getElementById('totale-pagamento').innerText = document.getElementById('totale').innerText;
+        }
+
+        function completaPagamento() {
+            const metodo = document.getElementById('metodo-pagamento').value;
+            const totale = document.getElementById('totale-pagamento').innerText;
+            alert(`Pagamento di €${totale} con ${metodo} completato!`);
+        }
+
+    </script>
+</body>
+</html>

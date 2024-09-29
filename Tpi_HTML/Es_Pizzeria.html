@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prenotazione Pizza Online</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-base-200">
+    <div class="container mx-auto p-5">
+        <h1 class="text-3xl font-bold text-center">Ordina le tue Pizze!</h1>
+        
+        <!-- Sezione di selezione pizza -->
+        <div class="mt-5">
+            <h2 class="text-2xl font-semibold">Scegli il tipo di pizza:</h2>
+            <div class="grid grid-cols-2 gap-4 mt-2">
+                <label class="cursor-pointer">
+                    <input type="checkbox" name="tipoPizza" value="Margherita" class="hidden" onchange="aggiornaRiepilogo()">
+                    <div class="card bg-white shadow-md hover:shadow-lg transition p-5 rounded-lg">
+                        <h3 class="text-lg font-bold">Margherita</h3>
+                        <p>€8.00</p>
+                    </div>
+                </label>
+                <label class="cursor-pointer">
+                    <input type="checkbox" name="tipoPizza" value="Pepperoni" class="hidden" onchange="aggiornaRiepilogo()">
+                    <div class="card bg-white shadow-md hover:shadow-lg transition p-5 rounded-lg">
+                        <h3 class="text-lg font-bold">Pepperoni</h3>
+                        <p>€9.00</p>
+                    </div>
+                </label>
+                <label class="cursor-pointer">
+                    <input type="checkbox" name="tipoPizza" value="Vegetariana" class="hidden" onchange="aggiornaRiepilogo()">
+                    <div class="card bg-white shadow-md hover:shadow-lg transition p-5 rounded-lg">
+                        <h3 class="text-lg font-bold">Vegetariana</h3>
+                        <p>€8.50</p>
+                    </div>
+                </label>
+                <label class="cursor-pointer">
+                    <input type="checkbox" name="tipoPizza" value="Quattro Formaggi" class="hidden" onchange="aggiornaRiepilogo()">
+                    <div class="card bg-white shadow-md hover:shadow-lg transition p-5 rounded-lg">
+                        <h3 class="text-lg font-bold">Quattro Formaggi</h3>
+                        <p>€10.00</p>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <!-- Sezione ingredienti extra -->
+        <div class="mt-5">
+            <h2 class="text-2xl font-semibold">Ingredienti Extra:</h2>
+            <table class="table w-full mt-2">
+                <tbody>
+                    <tr>
+                        <td>
+                            <label class="cursor-pointer">
+                                <input type="checkbox" value="Funghi" class="hidden" onchange="aggiornaRiepilogo()">
+                                <span class="btn btn-outline">Funghi - €1.50</span>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="cursor-pointer">
+                                <input type="checkbox" value="Olive" class="hidden" onchange="aggiornaRiepilogo()">
+                                <span class="btn btn-outline">Olive - €1.00</span>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="cursor-pointer">
+                                <input type="checkbox" value="Peperoni" class="hidden" onchange="aggiornaRiepilogo()">
+                                <span class="btn btn-outline">Peperoni - €1.50</span>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="cursor-pointer">
+                                <input type="checkbox" value="Ananas" class="hidden" onchange="aggiornaRiepilogo()">
+                                <span class="btn btn-outline">Ananas - €1.20</span>
+                            </label>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Sezione quantità -->
+        <div class="mt-5">
+            <h2 class="text-2xl font-semibold">Quantità:</h2>
+            <input type="number" id="quantita" value="1" min="1" class="input input-bordered w-full mt-2" onchange="aggiornaRiepilogo()" />
+        </div>
+
+        <!-- Riepilogo ordine -->
+        <div class="mt-5">
+            <h2 class="text-2xl font-semibold">Riepilogo Ordine:</h2>
+            <div id="riepilogo" class="border p-5 rounded-lg bg-white mt-2">
+                <table class="table w-full">
+                    <thead>
+                        <tr>
+                            <th>Pizza</th>
+                            <th>Ingredienti Extra</th>
+                            <th>Quantità</th>
+                            <th>Totale</th>
+                            <th>Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabella-ordine"></tbody>
+                </table>
+                <p class="font-bold">Totale Finale: €<span id="totale-finale">0.00</span></p>
+            </div>
+        </div>
+
+        <button onclick="inviaOrdine()" class="btn btn-primary mt-5 w-full">Invia Ordine</button>
+    </div>
+
+    <script>
+        const prezzi = {
+            'Margherita': 8.00,
+            'Pepperoni': 9.00,
+            'Vegetariana': 8.50,
+            'Quattro Formaggi': 10.00,
+        };
+
+        let ordine = [];
+
+        function aggiornaRiepilogo() {
+            const tabellaOrdine = document.getElementById('tabella-ordine');
+            tabellaOrdine.innerHTML = ''; // Pulisce la tabella
+            let totaleFinale = 0;
+
+            // Resetta l'ordine prima di ricostruirlo
+            ordine = [];
+
+            const pizzeSelezionate = document.querySelectorAll('input[name="tipoPizza"]:checked');
+            pizzeSelezionate.forEach((pizza, index) => {
+                const quantita = parseInt(document.getElementById('quantita').value) || 1;
+                const ingredientiExtra = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+                    .map(checkbox => checkbox.value);
+                const prezzoPizza = prezzi[pizza.value];
+                const totalePizza = prezzoPizza * quantita + ingredientiExtra.reduce((total, item) => {
+                    switch (item) {
+                        case "Funghi": return total + 1.50;
+                        case "Olive": return total + 1.00;
+                        case "Peperoni": return total + 1.50;
+                        case "Ananas": return total + 1.20;
+                        default: return total;
+                    }
+                }, 0);
+
+                ordine.push({ pizza: pizza.value, ingredienti: ingredientiExtra, quantita: quantita, totale: totalePizza });
+
+                const riga = tabellaOrdine.insertRow();
+                riga.insertCell(0).innerText = pizza.value;
+                riga.insertCell(1).innerText = ingredientiExtra.join(', ') || "Nessuno";
+                riga.insertCell(2).innerText = quantita;
+                riga.insertCell(3).innerText = `€${totalePizza.toFixed(2)}`;
+
+                // Bottone "Rimuovi"
+                const bottoneRimuovi = document.createElement('button');
+                bottoneRimuovi.innerText = "Rimuovi";
+                bottoneRimuovi.className = "btn btn-outline btn-error";
+                bottoneRimuovi.onclick = () => {
+                    ordine.splice(index, 1); // Rimuovi pizza dall'ordine
+                    aggiornaRiepilogo(); // Aggiorna la tabella dopo la rimozione
+                };
+                riga.insertCell(4).appendChild(bottoneRimuovi);
+
+                totaleFinale += totalePizza;
+            });
+
+            document.getElementById('totale-finale').innerText = totaleFinale.toFixed(2);
+        }
+
+        function inviaOrdine() {
+            let dettagliOrdine = ordine.map(item => {
+                return `Pizza: ${item.pizza}, Ingredienti Extra: ${item.ingredienti.join(', ') || "Nessuno"}, Quantità: ${item.quantita}, Totale: €${item.totale.toFixed(2)}`;
+            }).join('\n');
+
+            const totale = document.getElementById('totale-finale').innerText;
+            alert(`Ordine inviato!\nDettagli:\n${dettagliOrdine}\nTotale Finale: €${totale}`);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scheda di Manutenzione Auto</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-orange-100">
+    <div class="container mx-auto p-6">
+        <div class="card bg-yellow-200 shadow-xl p-8 mb-6">
+            <h1 class="text-3xl font-bold text-center mb-6 text-red-600">Scheda di Manutenzione Auto</h1>
+
+            <!-- Dati Personali -->
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold mb-4 text-yellow-900">Dati Personali</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Nome e Cognome</span>
+                        </label>
+                        <input type="text" placeholder="Inserisci il tuo nome" class="input input-bordered w-full bg-orange-50" />
+                    </div>
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Email</span>
+                        </label>
+                        <input type="email" placeholder="Inserisci la tua email" class="input input-bordered w-full bg-orange-50" />
+                    </div>
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Numero di Telefono</span>
+                        </label>
+                        <input type="tel" placeholder="Inserisci il tuo numero di telefono" class="input input-bordered w-full bg-orange-50" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dati Auto -->
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold mb-4 text-yellow-900">Dati dell'Auto</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Chilometraggio Attuale</span>
+                        </label>
+                        <input type="number" placeholder="Inserisci il chilometraggio" class="input input-bordered w-full bg-orange-50" />
+                    </div>
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Data Ultima Manutenzione</span>
+                        </label>
+                        <input type="date" class="input input-bordered w-full bg-orange-50" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sezione Manutenzioni -->
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold mb-4 text-yellow-900">Seleziona le Operazioni di Manutenzione</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="card card-bordered bg-red-100">
+                        <div class="card-body">
+                            <label class="cursor-pointer">
+                                <input type="checkbox" value="Cambio Olio" data-costo="80" class="checkbox checkbox-warning mr-2" onchange="calcolaTotale()">
+                                <span class="label-text text-orange-900">Cambio Olio</span>
+                                <div class="badge badge-warning ml-2">€80</div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="card card-bordered bg-red-100">
+                        <div class="card-body">
+                            <label class="cursor-pointer">
+                                <input type="checkbox" value="Controllo Freni" data-costo="50" class="checkbox checkbox-warning mr-2" onchange="calcolaTotale()">
+                                <span class="label-text text-orange-900">Controllo Freni</span>
+                                <div class="badge badge-warning ml-2">€50</div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="card card-bordered bg-red-100">
+                        <div class="card-body">
+                            <label class="cursor-pointer">
+                                <input type="checkbox" value="Cambio Filtro Aria" data-costo="30" class="checkbox checkbox-warning mr-2" onchange="calcolaTotale()">
+                                <span class="label-text text-orange-900">Cambio Filtro Aria</span>
+                                <div class="badge badge-warning ml-2">€30</div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="card card-bordered bg-red-100">
+                        <div class="card-body">
+                            <label class="cursor-pointer">
+                                <input type="checkbox" value="Sostituzione Batteria" data-costo="120" class="checkbox checkbox-warning mr-2" onchange="calcolaTotale()">
+                                <span class="label-text text-orange-900">Sostituzione Batteria</span>
+                                <div class="badge badge-warning ml-2">€120</div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="card card-bordered bg-red-100">
+                        <div class="card-body">
+                            <label class="cursor-pointer">
+                                <input type="checkbox" value="Controllo Ammortizzatori" data-costo="60" class="checkbox checkbox-warning mr-2" onchange="calcolaTotale()">
+                                <span class="label-text text-orange-900">Controllo Ammortizzatori</span>
+                                <div class="badge badge-warning ml-2">€60</div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="card card-bordered bg-red-100">
+                        <div class="card-body">
+                            <label class="cursor-pointer">
+                                <input type="checkbox" value="Ricarica Aria Condizionata" data-costo="100" class="checkbox checkbox-warning mr-2" onchange="calcolaTotale()">
+                                <span class="label-text text-orange-900">Ricarica Aria Condizionata</span>
+                                <div class="badge badge-warning ml-2">€100</div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Riepilogo Totale -->
+            <div class="p-6 bg-yellow-200 shadow-lg rounded-lg">
+                <h2 class="text-2xl font-semibold mb-4 text-yellow-900">Riepilogo Costo</h2>
+                <p class="text-lg font-bold text-red-600">Costo Totale: €<span id="totale">0.00</span></p>
+            </div>
+
+            <button class="btn btn-warning mt-6 w-full">Invia Scheda di Manutenzione</button>
+        </div>
+    </div>
+
+    <script>
+        function calcolaTotale() {
+            const checkboxes = document.querySelectorAll('.checkbox:checked');
+            let totale = 0;
+            
+            checkboxes.forEach((checkbox) => {
+                const costo = parseFloat(checkbox.getAttribute('data-costo'));
+                totale += costo;
+            });
+
+            document.getElementById('totale').innerText = totale.toFixed(2);
+        }
+    </script>
+</body>
+</html>
